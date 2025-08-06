@@ -2,10 +2,12 @@ import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { QrCode, Camera, Share2, Download } from 'lucide-react';
+import { QrCode, Camera, Share2, Download, Projector, Headphones } from 'lucide-react';
 import { HeavenlyGate } from './HeavenlyGate';
 import { QRCodeGenerator } from './QRCodeGenerator';
 import { HologramView } from './HologramView';
+import { BeamerView } from './BeamerView';
+import { VRView } from './VRView';
 
 export interface MemorialData {
   id: string;
@@ -39,6 +41,8 @@ export const MemorialCard: React.FC<MemorialCardProps> = ({
 }) => {
   const [showHologram, setShowHologram] = useState(false);
   const [showQR, setShowQR] = useState(false);
+  const [showBeamer, setShowBeamer] = useState(false);
+  const [showVR, setShowVR] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
   const cardVariants = {
@@ -157,7 +161,7 @@ export const MemorialCard: React.FC<MemorialCardProps> = ({
 
           {/* Action Buttons */}
           <motion.div 
-            className="flex justify-center gap-2"
+            className="grid grid-cols-3 gap-2 max-w-sm mx-auto"
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 1.1 }}
@@ -170,6 +174,26 @@ export const MemorialCard: React.FC<MemorialCardProps> = ({
             >
               <Camera className="w-4 h-4 mr-1" />
               AR View
+            </Button>
+            
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowBeamer(true)}
+              className="bg-primary/10 border-primary hover:bg-primary hover:text-primary-foreground"
+            >
+              <Projector className="w-4 h-4 mr-1" />
+              Beamer
+            </Button>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowVR(true)}
+              className="bg-primary/10 border-primary hover:bg-primary hover:text-primary-foreground"
+            >
+              <Headphones className="w-4 h-4 mr-1" />
+              VR
             </Button>
             
             <Button
@@ -233,6 +257,22 @@ export const MemorialCard: React.FC<MemorialCardProps> = ({
         <HologramView 
           memorial={memorial}
           onClose={() => setShowHologram(false)}
+        />
+      )}
+
+      {/* Beamer View */}
+      {showBeamer && (
+        <BeamerView 
+          memorial={memorial}
+          onClose={() => setShowBeamer(false)}
+        />
+      )}
+
+      {/* VR View */}
+      {showVR && (
+        <VRView 
+          memorial={memorial}
+          onClose={() => setShowVR(false)}
         />
       )}
     </motion.div>
