@@ -1,7 +1,8 @@
+
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Text, Sphere, Box } from '@react-three/drei';
+import { OrbitControls, Sphere, Box } from '@react-three/drei';
 import { X, Volume2, VolumeX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -18,29 +19,13 @@ const HolographicAvatar: React.FC<{ memorial: MemorialData; animate: boolean }> 
   animate 
 }) => {
   const avatarRef = useRef<THREE.Group>(null);
-  const particlesRef = useRef<THREE.Points>(null);
 
   useFrame((state) => {
     if (avatarRef.current && animate) {
       avatarRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.5) * 0.2;
       avatarRef.current.position.y = Math.sin(state.clock.elapsedTime * 2) * 0.1;
     }
-    
-    if (particlesRef.current) {
-      particlesRef.current.rotation.y += 0.005;
-    }
   });
-
-  // Create holographic particles
-  const particles = React.useMemo(() => {
-    const positions = new Float32Array(100 * 3);
-    for (let i = 0; i < 100; i++) {
-      positions[i * 3] = (Math.random() - 0.5) * 4;
-      positions[i * 3 + 1] = Math.random() * 3;
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 4;
-    }
-    return positions;
-  }, []);
 
   const getAvatarColor = () => {
     switch (memorial.cardType) {
@@ -53,14 +38,12 @@ const HolographicAvatar: React.FC<{ memorial: MemorialData; animate: boolean }> 
 
   return (
     <group ref={avatarRef}>
-      {/* Avatar Body */}
+      {/* Avatar Head */}
       <Sphere position={[0, 1.5, 0]} args={[0.3]}>
         <meshStandardMaterial 
           color={getAvatarColor()} 
           transparent 
           opacity={0.7}
-          emissive={getAvatarColor()}
-          emissiveIntensity={0.2}
         />
       </Sphere>
       
@@ -70,8 +53,6 @@ const HolographicAvatar: React.FC<{ memorial: MemorialData; animate: boolean }> 
           color={getAvatarColor()} 
           transparent 
           opacity={0.6}
-          emissive={getAvatarColor()}
-          emissiveIntensity={0.1}
         />
       </Box>
 
@@ -81,51 +62,8 @@ const HolographicAvatar: React.FC<{ memorial: MemorialData; animate: boolean }> 
           color="#FFD700" 
           transparent 
           opacity={0.1}
-          blending={THREE.AdditiveBlending}
         />
       </Sphere>
-
-      {/* Floating Text */}
-      <Text
-        position={[0, 2.5, 0]}
-        fontSize={0.2}
-        color="#FFD700"
-        anchorX="center"
-        anchorY="middle"
-        maxWidth={3}
-      >
-        {memorial.name}
-      </Text>
-
-      <Text
-        position={[0, -0.5, 0]}
-        fontSize={0.15}
-        color="#DAA520"
-        anchorX="center"
-        anchorY="middle"
-        maxWidth={4}
-      >
-        {memorial.memoryText}
-      </Text>
-
-      {/* Particle System */}
-      <points ref={particlesRef}>
-        <bufferGeometry>
-          <bufferAttribute
-            attach="attributes-position"
-            array={particles}
-            count={particles.length / 3}
-            itemSize={3}
-          />
-        </bufferGeometry>
-        <pointsMaterial 
-          color="#FFD700" 
-          size={0.03} 
-          transparent 
-          opacity={0.8}
-          blending={THREE.AdditiveBlending}
-        />
-      </points>
     </group>
   );
 };
