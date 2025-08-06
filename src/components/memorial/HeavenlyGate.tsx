@@ -1,6 +1,6 @@
 import React, { useRef, useMemo } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Text, Box, Sphere } from '@react-three/drei';
+import { OrbitControls, Text } from '@react-three/drei';
 import * as THREE from 'three';
 
 interface HeavenlyGateProps {
@@ -12,7 +12,7 @@ const GateStructure: React.FC<{ animate: boolean }> = ({ animate }) => {
   const particlesRef = useRef<THREE.Points>(null);
   
   // Create particle system for heavenly effect
-  const particles = useMemo(() => {
+  const particlePositions = useMemo(() => {
     const positions = new Float32Array(200 * 3);
     for (let i = 0; i < 200; i++) {
       positions[i * 3] = (Math.random() - 0.5) * 10;
@@ -41,22 +41,26 @@ const GateStructure: React.FC<{ animate: boolean }> = ({ animate }) => {
   return (
     <group ref={gateRef}>
       {/* Gate Pillars */}
-      <Box position={[-2, 2, 0]} args={[0.3, 4, 0.3]}>
+      <mesh position={[-2, 2, 0]}>
+        <boxGeometry args={[0.3, 4, 0.3]} />
         <meshStandardMaterial color="#DAA520" metalness={0.8} roughness={0.2} />
-      </Box>
-      <Box position={[2, 2, 0]} args={[0.3, 4, 0.3]}>
+      </mesh>
+      <mesh position={[2, 2, 0]}>
+        <boxGeometry args={[0.3, 4, 0.3]} />
         <meshStandardMaterial color="#DAA520" metalness={0.8} roughness={0.2} />
-      </Box>
+      </mesh>
       
       {/* Gate Top */}
-      <Box position={[0, 4, 0]} args={[4.6, 0.3, 0.3]}>
+      <mesh position={[0, 4, 0]}>
+        <boxGeometry args={[4.6, 0.3, 0.3]} />
         <meshStandardMaterial color="#DAA520" metalness={0.8} roughness={0.2} />
-      </Box>
+      </mesh>
       
       {/* Decorative Elements */}
-      <Sphere position={[0, 4.5, 0]} args={[0.2]}>
+      <mesh position={[0, 4.5, 0]}>
+        <sphereGeometry args={[0.2]} />
         <meshStandardMaterial color="#FFD700" emissive="#FFD700" emissiveIntensity={0.3} />
-      </Sphere>
+      </mesh>
       
       {/* Heavenly Light */}
       <mesh position={[0, 3, -1]}>
@@ -65,7 +69,6 @@ const GateStructure: React.FC<{ animate: boolean }> = ({ animate }) => {
           color="#FFD700" 
           transparent 
           opacity={0.2} 
-          blending={THREE.AdditiveBlending}
         />
       </mesh>
       
@@ -74,8 +77,8 @@ const GateStructure: React.FC<{ animate: boolean }> = ({ animate }) => {
         <bufferGeometry>
           <bufferAttribute
             attach="attributes-position"
-            array={particles}
-            count={particles.length / 3}
+            array={particlePositions}
+            count={particlePositions.length / 3}
             itemSize={3}
           />
         </bufferGeometry>
