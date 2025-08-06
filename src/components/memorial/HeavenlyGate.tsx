@@ -74,7 +74,9 @@ const GateStructure: React.FC<{ animate: boolean }> = ({ animate }) => {
         <bufferGeometry>
           <bufferAttribute
             attach="attributes-position"
-            args={[particles, 3]}
+            array={particles}
+            count={particles.length / 3}
+            itemSize={3}
           />
         </bufferGeometry>
         <pointsMaterial 
@@ -82,7 +84,6 @@ const GateStructure: React.FC<{ animate: boolean }> = ({ animate }) => {
           size={0.05} 
           transparent 
           opacity={0.6}
-          blending={THREE.AdditiveBlending}
         />
       </points>
       
@@ -93,7 +94,6 @@ const GateStructure: React.FC<{ animate: boolean }> = ({ animate }) => {
         color="#DAA520"
         anchorX="center"
         anchorY="middle"
-        font="/fonts/serif.woff"
       >
         In Eternal Memory
       </Text>
