@@ -20,7 +20,7 @@ DATABASE_CONFIG = {
     'host': os.getenv('DB_HOST', 'localhost'),
     'database': os.getenv('DB_NAME', 'memorial_cards'),
     'user': os.getenv('DB_USER', 'postgres'),
-    'password': os.getenv('DB_PASSWORD', 'password'),
+    'password': os.getenv('DB_PASSWORD', 'root'),
     'port': os.getenv('DB_PORT', '5432')
 }
 

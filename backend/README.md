@@ -77,7 +77,7 @@ pip install -r requirements.txt
 export DB_HOST=localhost
 export DB_NAME=memorial_cards
 export DB_USER=postgres
-export DB_PASSWORD=your_password
+export DB_PASSWORD=root
 export DB_PORT=5432
 ```
 

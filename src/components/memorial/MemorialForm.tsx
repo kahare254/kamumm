@@ -21,8 +21,10 @@ interface FormData {
   deathDate: string;
   cardType: 'male' | 'female' | 'child';
   photo: FileList;
+  photoPath: string; // ✅ new
   enableGPS: boolean;
   locationName: string;
+
 }
 
 export const MemorialForm: React.FC<MemorialFormProps> = ({ onSubmit, onCancel }) => {
@@ -34,16 +36,34 @@ export const MemorialForm: React.FC<MemorialFormProps> = ({ onSubmit, onCancel }
 
 
 
-  const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setPhotoPreview(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
+ const handlePhotoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const file = event.target.files?.[0];
+  if (file) {
+    setPhotoPreview(URL.createObjectURL(file)); // preview
+
+    const formData = new FormData();
+    formData.append('photo', file);
+
+    try {
+      const res = await fetch('http://localhost:5000/api/upload/photo', {
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.photo_path) {
+        // Set this hidden field to use on form submission
+        setValue('photoPath', data.photo_path);
+      } else {
+        console.error('Upload failed:', data.error);
+      }
+    } catch (err) {
+      console.error('Upload error:', err);
     }
-  };
+  }
+};
+
 
   const getCurrentLocation = () => {
     if (navigator.geolocation) {
@@ -73,7 +93,7 @@ export const MemorialForm: React.FC<MemorialFormProps> = ({ onSubmit, onCancel }
       deathDate: data.deathDate,
       memoryText: '',
       cardType: data.cardType,
-      photo: photoUrl,
+      photo: data.photoPath, // ✅ correct uploaded path
       gpsLocation: gpsLocation ? {
         lat: gpsLocation.lat,
         lng: gpsLocation.lng,
@@ -241,6 +261,7 @@ export const MemorialForm: React.FC<MemorialFormProps> = ({ onSubmit, onCancel }
               Cancel
             </Button>
           </div>
+          <input type="hidden" {...register('photoPath')} />
         </form>
       </Card>
     </motion.div>

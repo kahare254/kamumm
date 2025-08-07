@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -45,14 +45,64 @@ const Index = () => {
       name: 'Memorial Garden, New York'
     }
   });
+  const [memorials, setMemorials] = useState<MemorialData[]>([]);
 
-  const handleCreateMemorial = (data: Partial<MemorialData>) => {
-    console.log('Creating memorial:', data);
-    // Here you would typically save to your backend
-    setShowForm(false);
-    // For now, just show a success message
-    alert('Memorial card created successfully!');
+  const [selectedMemorial, setSelectedMemorial] = useState<MemorialData | null>(null);
+
+  useEffect(() => {
+  const fetchMemorials = async () => {
+    try {
+      const res = await fetch('http://localhost:5000/api/memorials');
+      const data = await res.json();
+      if (res.ok) {
+        setMemorials(data.memorials);
+      } else {
+        console.error('Error fetching memorials:', data.error);
+      }
+    } catch (error) {
+      console.error('Fetch error:', error);
+    }
   };
+
+  fetchMemorials();
+}, []);
+
+ const handleCreateMemorial = async (data: Partial<MemorialData>) => {
+  try {
+    const response = await fetch('http://localhost:5000/api/memorials', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name: data.name,
+        birth_date: data.birthDate,
+        death_date: data.deathDate,
+        memory_text: data.memoryText,
+        card_type: data.cardType,
+        photo_path: data.photo, // assuming you're passing the uploaded photo path
+        gps_latitude: data.gpsLocation?.lat,
+        gps_longitude: data.gpsLocation?.lng,
+        gps_location_name: data.gpsLocation?.name,
+      }),
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      alert('Memorial card created successfully!');
+      console.log('Saved Memorial:', result);
+    } else {
+      alert('Error creating memorial: ' + result.error);
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('An unexpected error occurred.');
+  }
+
+  setShowForm(false);
+};
+
 
 
 
@@ -128,35 +178,36 @@ const Index = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuItem onClick={() => { setSelectedMode('vr'); setShowVR(true); }} className="cursor-pointer">
+                  <DropdownMenuItem onClick={() => { setSelectedMode('vr');    setSelectedMemorial(sampleMemorial); 
+ setShowVR(true); }} className="cursor-pointer">
                     <Headphones className="w-4 h-4 mr-2" />
                     <div>
                       <div className="font-medium">VR Memorial Garden</div>
                       <div className="text-xs text-muted-foreground">Sacred VR experience with memory orbs</div>
                     </div>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => { setSelectedMode('ar'); setShowEnhancedAR(true); }} className="cursor-pointer">
+                  <DropdownMenuItem onClick={() => { setSelectedMode('ar'); setSelectedMemorial(sampleMemorial); setShowEnhancedAR(true); }} className="cursor-pointer">
                     <Camera className="w-4 h-4 mr-2" />
                     <div>
                       <div className="font-medium">AR Experience</div>
                       <div className="text-xs text-muted-foreground">Augmented reality memorial viewing</div>
                     </div>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => { setSelectedMode('beamer'); setShowBeamer(true); }} className="cursor-pointer">
+                  <DropdownMenuItem onClick={() => { setSelectedMode('beamer'); setSelectedMemorial(sampleMemorial); setShowBeamer(true); }} className="cursor-pointer">
                     <Projector className="w-4 h-4 mr-2" />
                     <div>
                       <div className="font-medium">Beamer Mode</div>
                       <div className="text-xs text-muted-foreground">Projector presentation view</div>
                     </div>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => { setSelectedMode('ar'); setShowARManager(true); }} className="cursor-pointer">
+                  <DropdownMenuItem onClick={() => { setSelectedMode('ar'); setSelectedMemorial(sampleMemorial);setShowARManager(true); }} className="cursor-pointer">
                     <Sparkles className="w-4 h-4 mr-2" />
                     <div>
                       <div className="font-medium">Hologram View</div>
                       <div className="text-xs text-muted-foreground">Interactive holographic experience</div>
                     </div>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setShowNFT(true)} className="cursor-pointer">
+                  <DropdownMenuItem onClick={() => {setShowNFT(true); setSelectedMemorial(sampleMemorial);}} className="cursor-pointer">
                     <Gem className="w-4 h-4 mr-2" />
                     <div>
                       <div className="font-medium">NFT Token</div>
@@ -171,14 +222,18 @@ const Index = () => {
 
         {/* Sample Memorial Card */}
         <section className="container mx-auto px-4 py-2">
+            {memorials.map(memorial => (
+
           <motion.div
+            key={memorial.id} 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2, duration: 0.6 }}
             className="flex justify-center"
           >
-            <MemorialCard memorial={sampleMemorial} showAR={false} />
+            <MemorialCard memorial={memorial} showAR={false} />
           </motion.div>
+          ))}
         </section>
 
 
@@ -187,45 +242,66 @@ const Index = () => {
 
       {/* Working Modal Components from MemorialCard */}
 
-      {/* Enhanced Beamer View */}
-      {showBeamer && (
-        <EnhancedBeamerView
-          memorial={sampleMemorial}
-          onClose={() => setShowBeamer(false)}
-        />
-      )}{/* VR Memorial Garden */}
-      {showVR && (
-        <VRErrorBoundary onClose={() => setShowVR(false)}>
-          <VRMemorialGarden
-            memorial={sampleMemorial}
-            onClose={() => setShowVR(false)}
+     {/* Enhanced Beamer View */}
+        {showBeamer && selectedMemorial && (
+          <EnhancedBeamerView
+            memorial={selectedMemorial}
+            onClose={() => {
+              setShowBeamer(false);
+              setSelectedMemorial(null);
+            }}
           />
-        </VRErrorBoundary>
-      )}
+        )}
 
-      {/* Enhanced AR View */}
-      {showEnhancedAR && (
-        <EnhancedARViewer
-          memorial={sampleMemorial}
-          onClose={() => setShowEnhancedAR(false)}
-        />
-      )}
+        {/* VR Memorial Garden */}
+        {showVR && selectedMemorial && (
+          <VRErrorBoundary onClose={() => {
+            setShowVR(false);
+            setSelectedMemorial(null);
+          }}>
+            <VRMemorialGarden
+              memorial={selectedMemorial}
+              onClose={() => {
+                setShowVR(false);
+                setSelectedMemorial(null);
+              }}
+            />
+          </VRErrorBoundary>
+        )}
 
-      {/* AR Manager */}
-      {showARManager && (
-        <ARManager
-          memorial={sampleMemorial}
-          onClose={() => setShowARManager(false)}
-        />
-      )}
+        {/* Enhanced AR View */}
+        {showEnhancedAR && selectedMemorial && (
+          <EnhancedARViewer
+            memorial={selectedMemorial}
+            onClose={() => {
+              setShowEnhancedAR(false);
+              setSelectedMemorial(null);
+            }}
+          />
+        )}
 
-      {/* NFT Token Placeholder */}
-      {showNFT && (
-        <NFTTokenPlaceholder
-          memorialId={sampleMemorial.id}
-          onClose={() => setShowNFT(false)}
-        />
-      )}
+        {/* AR Manager */}
+        {showARManager && selectedMemorial && (
+          <ARManager
+            memorial={selectedMemorial}
+            onClose={() => {
+              setShowARManager(false);
+              setSelectedMemorial(null);
+            }}
+          />
+        )}
+
+        {/* NFT Token Placeholder */}
+        {showNFT && selectedMemorial && (
+          <NFTTokenPlaceholder
+            memorialId={selectedMemorial.id}
+            onClose={() => {
+              setShowNFT(false);
+              setSelectedMemorial(null);
+            }}
+          />
+        )}
+
     </div>
   );
 };

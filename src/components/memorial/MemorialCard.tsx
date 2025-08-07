@@ -128,7 +128,7 @@ export const MemorialCard = ({
           >
             <div className="w-32 h-40 mx-auto rounded-lg overflow-hidden shadow-lg border-4 border-primary/50">
               <img
-                src={memorial.photo || islamicArchPlaceholder}
+                src={`http://localhost:5000${memorial.photo}`}
                 alt={memorial.name}
                 className="w-full h-full object-cover"
               />
