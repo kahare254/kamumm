@@ -11,8 +11,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { MemorialForm } from '@/components/memorial/MemorialForm';
-import { MemorialCard, MemorialData } from '@/components/memorial/MemorialCard';
-import { CSS3DVR } from '@/components/vr/CSS3DVR';
+import { MemorialCard, MemorialData } from '@/components/memorial/MemorialCard';import { VRMemorialGarden } from '@/components/vr/VRMemorialGarden';
 import { VRErrorBoundary } from '@/components/vr/VRErrorBoundary';
 import { EnhancedARViewer } from '@/components/memorial/EnhancedARViewer';
 import { EnhancedBeamerView } from '@/components/beamer/EnhancedBeamerView';
@@ -175,12 +174,10 @@ const Index = () => {
           memorial={sampleMemorial}
           onClose={() => setShowBeamer(false)}
         />
-      )}
-
-      {/* VR Memorial Garden */}
+      )}{/* VR Memorial Garden */}
       {showVR && (
         <VRErrorBoundary onClose={() => setShowVR(false)}>
-          <CSS3DVR
+          <VRMemorialGarden
             memorial={sampleMemorial}
             onClose={() => setShowVR(false)}
           />

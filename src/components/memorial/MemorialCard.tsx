@@ -10,9 +10,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { HeavenlyGate } from './HeavenlyGate';
-import { QRCodeGenerator } from './QRCodeGenerator';
-
-import { CSS3DVR } from '../vr/CSS3DVR';
+import { QRCodeGenerator } from './QRCodeGenerator';import { VRMemorialGarden } from '../vr/VRMemorialGarden';
 import { VRErrorBoundary } from '../vr/VRErrorBoundary';
 import { EnhancedBeamerView } from '../beamer/EnhancedBeamerView';
 import { EnhancedARViewer } from './EnhancedARViewer';
@@ -237,12 +235,10 @@ export const MemorialCard = ({
           memorial={memorial}
           onClose={() => setShowBeamer(false)}
         />
-      )}
-
-      {/* VR Memorial Garden */}
+      )}{/* VR Memorial Garden */}
       {showVR && (
         <VRErrorBoundary onClose={() => setShowVR(false)}>
-          <CSS3DVR
+          <VRMemorialGarden
             memorial={memorial}
             onClose={() => setShowVR(false)}
           />
