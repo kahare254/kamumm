@@ -3,12 +3,30 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Plus, Eye, QrCode, Sparkles, Heart, Camera, Share2 } from 'lucide-react';
+import { Plus, Eye, Headphones, ChevronDown, Camera, Projector } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { MemorialForm } from '@/components/memorial/MemorialForm';
 import { MemorialCard, MemorialData } from '@/components/memorial/MemorialCard';
+import { CSS3DVR } from '@/components/vr/CSS3DVR';
+import { VRErrorBoundary } from '@/components/vr/VRErrorBoundary';
+import { EnhancedARViewer } from '@/components/memorial/EnhancedARViewer';
+import { EnhancedBeamerView } from '@/components/beamer/EnhancedBeamerView';
+
+
 
 const Index = () => {
   const [showForm, setShowForm] = useState(false);
+  const [selectedMode, setSelectedMode] = useState<'vr' | 'ar' | 'beamer'>('vr');
+
+  // Working modal states from MemorialCard
+  const [showVR, setShowVR] = useState(false);
+  const [showEnhancedAR, setShowEnhancedAR] = useState(false);
+  const [showBeamer, setShowBeamer] = useState(false);
   const [sampleMemorial] = useState<MemorialData>({
     id: 'sample',
     name: 'Naomi N.',
@@ -16,7 +34,12 @@ const Index = () => {
     deathDate: '2024-01-10',
     photo: '/lovable-uploads/97f52ec1-ca70-49d3-9242-069944655158.png',
     memoryText: 'A beautiful soul who brought joy and warmth to everyone she met. Her legacy of love and compassion will live on forever in our hearts.',
-    cardType: 'female'
+    cardType: 'female',
+    gpsLocation: {
+      lat: 40.7589,
+      lng: -73.9851,
+      name: 'Memorial Garden, New York'
+    }
   });
 
   const handleCreateMemorial = (data: Partial<MemorialData>) => {
@@ -27,33 +50,7 @@ const Index = () => {
     alert('Memorial card created successfully!');
   };
 
-  const features = [
-    {
-      icon: <Camera className="w-8 h-8 text-primary" />,
-      title: "AR Hologram",
-      description: "Experience loved ones in 3D holographic form with AR technology"
-    },
-    {
-      icon: <Sparkles className="w-8 h-8 text-primary" />,
-      title: "AI Memory Assistant",
-      description: "Get AI-powered suggestions for beautiful memorial messages"
-    },
-    {
-      icon: <QrCode className="w-8 h-8 text-primary" />,
-      title: "QR Code Access",
-      description: "Easy scanning for instant access to digital memorials"
-    },
-    {
-      icon: <Heart className="w-8 h-8 text-primary" />,
-      title: "Heavenly Gates",
-      description: "Beautiful spiritual gates with heavenly light effects"
-    },
-    {
-      icon: <Share2 className="w-8 h-8 text-primary" />,
-      title: "NFC & GPS",
-      description: "Location tagging and NFC chip integration for physical memorials"
-    }
-  ];
+
 
   if (showForm) {
     return (
@@ -81,34 +78,31 @@ const Index = () => {
 
       {/* Main Content */}
       <div className="relative z-10">
-        {/* Hero Section */}
-        <section className="container mx-auto px-4 py-20 text-center">
+        {/* Navigation Section */}
+        <section className="w-full px-4 py-4">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1 }}
+            className="flex justify-between items-center w-full"
           >
-            <h1 className="text-5xl md:text-7xl font-bold text-primary mb-6 tracking-tight">
-              Gate of Memory
-            </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto leading-relaxed">
-              Create beautiful digital memorials with AR holograms, AI-powered memories, 
-              and heavenly spiritual experiences for your loved ones.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button 
+            {/* Create Memorial - Far Left */}
+            <div className="flex-shrink-0">
+              <Button
                 size="lg"
                 onClick={() => setShowForm(true)}
-                className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-heavenly text-lg px-8 py-4"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg text-lg px-8 py-4"
               >
                 <Plus className="w-5 h-5 mr-2" />
                 Create Memorial
               </Button>
-              
+            </div>
+
+            {/* Right Side Buttons */}
+            <div className="flex gap-4 flex-shrink-0">
               <Link to="/memorial/naomi-n">
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="lg"
                   className="border-primary text-primary hover:bg-primary hover:text-primary-foreground text-lg px-8 py-4"
                 >
@@ -116,98 +110,90 @@ const Index = () => {
                   View Demo
                 </Button>
               </Link>
+
+              {/* Options Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="border-purple-500 text-purple-500 hover:bg-purple-500 hover:text-white px-6 py-4 text-lg"
+                  >
+                    <span className="mr-2">Options</span>
+                    <ChevronDown className="w-5 h-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuItem onClick={() => { setSelectedMode('vr'); setShowVR(true); }} className="cursor-pointer">
+                    <Headphones className="w-4 h-4 mr-2" />
+                    <div>
+                      <div className="font-medium">VR Memorial Garden</div>
+                      <div className="text-xs text-muted-foreground">Sacred VR experience with memory orbs</div>
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => { setSelectedMode('ar'); setShowEnhancedAR(true); }} className="cursor-pointer">
+                    <Camera className="w-4 h-4 mr-2" />
+                    <div>
+                      <div className="font-medium">AR Experience</div>
+                      <div className="text-xs text-muted-foreground">Augmented reality memorial viewing</div>
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => { setSelectedMode('beamer'); setShowBeamer(true); }} className="cursor-pointer">
+                    <Projector className="w-4 h-4 mr-2" />
+                    <div>
+                      <div className="font-medium">Beamer Mode</div>
+                      <div className="text-xs text-muted-foreground">Projector presentation view</div>
+                    </div>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </motion.div>
         </section>
 
         {/* Sample Memorial Card */}
-        <section className="container mx-auto px-4 py-16">
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.8 }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
-              Experience Digital Memorials
-            </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              See how our memorial cards bring memories to life with AR technology and spiritual beauty
-            </p>
-          </motion.div>
-
+        <section className="container mx-auto px-4 py-2">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.5, duration: 0.8 }}
+            transition={{ delay: 0.2, duration: 0.6 }}
             className="flex justify-center"
           >
             <MemorialCard memorial={sampleMemorial} showAR={false} />
           </motion.div>
         </section>
 
-        {/* Features Section */}
-        <section className="container mx-auto px-4 py-16">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.7, duration: 0.8 }}
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-primary text-center mb-12">
-              Heavenly Features
-            </h2>
-            
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {features.map((feature, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.8 + index * 0.1, duration: 0.6 }}
-                >
-                  <Card className="p-6 text-center h-full border-primary/20 bg-card/50 backdrop-blur hover:shadow-soft transition-all duration-300">
-                    <div className="flex justify-center mb-4">
-                      {feature.icon}
-                    </div>
-                    <h3 className="text-xl font-semibold text-foreground mb-2">
-                      {feature.title}
-                    </h3>
-                    <p className="text-muted-foreground">
-                      {feature.description}
-                    </p>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        </section>
 
-        {/* CTA Section */}
-        <section className="container mx-auto px-4 py-20 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.2, duration: 0.8 }}
-          >
-            <Card className="max-w-2xl mx-auto p-8 bg-gradient-memorial border-primary/30 shadow-heavenly">
-              <h2 className="text-3xl font-bold text-primary mb-4">
-                Honor Their Memory
-              </h2>
-              <p className="text-lg text-muted-foreground mb-6">
-                Create a lasting digital tribute that celebrates life, preserves memories, 
-                and provides comfort through beautiful spiritual experiences.
-              </p>
-              <Button 
-                size="lg"
-                onClick={() => setShowForm(true)}
-                className="bg-primary hover:bg-primary/90 text-primary-foreground text-lg px-8 py-4"
-              >
-                Start Creating
-              </Button>
-            </Card>
-          </motion.div>
-        </section>
+
       </div>
+
+      {/* Working Modal Components from MemorialCard */}
+
+      {/* Enhanced Beamer View */}
+      {showBeamer && (
+        <EnhancedBeamerView
+          memorial={sampleMemorial}
+          onClose={() => setShowBeamer(false)}
+        />
+      )}
+
+      {/* VR Memorial Garden */}
+      {showVR && (
+        <VRErrorBoundary onClose={() => setShowVR(false)}>
+          <CSS3DVR
+            memorial={sampleMemorial}
+            onClose={() => setShowVR(false)}
+          />
+        </VRErrorBoundary>
+      )}
+
+      {/* Enhanced AR View */}
+      {showEnhancedAR && (
+        <EnhancedARViewer
+          memorial={sampleMemorial}
+          onClose={() => setShowEnhancedAR(false)}
+        />
+      )}
     </div>
   );
 };

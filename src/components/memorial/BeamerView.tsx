@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Play, Pause, ChevronLeft, ChevronRight, Volume2, VolumeX } from 'lucide-react';
+import { X, Play, Pause, ChevronLeft, ChevronRight, Volume2, VolumeX, Monitor, Presentation, Reflect } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { MemorialData } from './MemorialCard';
+import islamicArchPlaceholder from '../../assets/islamic-arch-placeholder.jpg';
 
 interface BeamerViewProps {
   memorial: MemorialData;
@@ -14,6 +15,9 @@ export const BeamerView: React.FC<BeamerViewProps> = ({ memorial, onClose }) => 
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
   const [isVisible, setIsVisible] = useState(false);
+  const [displayMode, setDisplayMode] = useState<'slideshow' | 'reflection'>('slideshow');
+  const [resolution, setResolution] = useState<'720p' | '1080p'>('1080p');
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   const slides = [
     {
@@ -27,7 +31,7 @@ export const BeamerView: React.FC<BeamerViewProps> = ({ memorial, onClose }) => 
     {
       type: 'photo',
       content: {
-        image: memorial.photo,
+        image: memorial.photo || islamicArchPlaceholder,
         caption: memorial.name
       }
     },
@@ -132,7 +136,7 @@ export const BeamerView: React.FC<BeamerViewProps> = ({ memorial, onClose }) => 
         return (
           <div className="flex flex-col items-center">
             <motion.div 
-              className="w-96 h-96 rounded-full overflow-hidden shadow-heavenly border-8 border-primary/50 mb-8"
+              className="w-96 h-96 rounded-full overflow-hidden shadow-lg border-8 border-primary/50 mb-8"
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 1 }}

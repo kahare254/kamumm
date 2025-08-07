@@ -73,8 +73,7 @@ export default {
 			backgroundImage: {
 				'gradient-heavenly': 'var(--gradient-heavenly)',
 				'gradient-ethereal': 'var(--gradient-ethereal)',
-				'gradient-memorial': 'var(--gradient-memorial)',
-				'gradient-hologram': 'var(--gradient-hologram)'
+				'gradient-memorial': 'var(--gradient-memorial)'
 			},
 			boxShadow: {
 				'heavenly': 'var(--glow-heavenly)',

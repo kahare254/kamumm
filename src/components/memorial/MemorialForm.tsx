@@ -4,10 +4,10 @@ import { useForm } from 'react-hook-form';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Upload, Sparkles, MapPin } from 'lucide-react';
+import { Upload, MapPin } from 'lucide-react';
 import { MemorialData } from './MemorialCard';
 
 interface MemorialFormProps {
@@ -19,7 +19,6 @@ interface FormData {
   name: string;
   birthDate: string;
   deathDate: string;
-  memoryText: string;
   cardType: 'male' | 'female' | 'child';
   photo: FileList;
   enableGPS: boolean;
@@ -29,12 +28,11 @@ interface FormData {
 export const MemorialForm: React.FC<MemorialFormProps> = ({ onSubmit, onCancel }) => {
   const [photoPreview, setPhotoPreview] = useState<string>('');
   const [gpsLocation, setGpsLocation] = useState<{ lat: number; lng: number } | null>(null);
-  const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
+
 
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<FormData>();
 
-  const cardType = watch('cardType');
-  const name = watch('name');
+
 
   const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -63,28 +61,7 @@ export const MemorialForm: React.FC<MemorialFormProps> = ({ onSubmit, onCancel }
     }
   };
 
-  const generateAISuggestions = (name: string, cardType: string) => {
-    // Simple AI-like suggestions based on name and type
-    const baseSuggestions = {
-      male: [
-        `A loving father and devoted husband, ${name} touched many hearts with his kindness and wisdom.`,
-        `${name} was a pillar of strength in our community, always ready to lend a helping hand.`,
-        `In memory of ${name}, whose legacy of love and compassion will live on forever.`
-      ],
-      female: [
-        `A beautiful soul and caring mother, ${name} brought joy and warmth to everyone she met.`,
-        `${name} was a beacon of grace and strength, inspiring all who knew her.`,
-        `Forever remembered for her gentle spirit and loving heart, ${name} will be deeply missed.`
-      ],
-      child: [
-        `Our precious ${name}, taken too soon but forever in our hearts.`,
-        `${name} brought sunshine and laughter to every day, leaving beautiful memories behind.`,
-        `Though ${name}'s time with us was brief, the love and joy shared will last forever.`
-      ]
-    };
 
-    setAiSuggestions(baseSuggestions[cardType as keyof typeof baseSuggestions] || []);
-  };
 
   const onFormSubmit = (data: FormData) => {
     const photoFile = data.photo?.[0];
@@ -94,7 +71,7 @@ export const MemorialForm: React.FC<MemorialFormProps> = ({ onSubmit, onCancel }
       name: data.name,
       birthDate: data.birthDate,
       deathDate: data.deathDate,
-      memoryText: data.memoryText,
+      memoryText: '',
       cardType: data.cardType,
       photo: photoUrl,
       gpsLocation: gpsLocation ? {
@@ -131,11 +108,6 @@ export const MemorialForm: React.FC<MemorialFormProps> = ({ onSubmit, onCancel }
               id="name"
               {...register('name', { required: 'Name is required' })}
               className="border-primary/30 focus:border-primary"
-              onChange={(e) => {
-                if (e.target.value && cardType) {
-                  generateAISuggestions(e.target.value, cardType);
-                }
-              }}
             />
             {errors.name && (
               <p className="text-destructive text-sm mt-1">{errors.name.message}</p>
@@ -147,9 +119,6 @@ export const MemorialForm: React.FC<MemorialFormProps> = ({ onSubmit, onCancel }
             <Label className="text-foreground font-medium">Memorial Type *</Label>
             <Select onValueChange={(value) => {
               setValue('cardType', value as 'male' | 'female' | 'child');
-              if (name && value) {
-                generateAISuggestions(name, value);
-              }
             }}>
               <SelectTrigger className="border-primary/30 focus:border-primary">
                 <SelectValue placeholder="Select memorial type" />
@@ -225,45 +194,7 @@ export const MemorialForm: React.FC<MemorialFormProps> = ({ onSubmit, onCancel }
             </div>
           </div>
 
-          {/* Memory Text with AI Suggestions */}
-          <div>
-            <Label htmlFor="memoryText" className="text-foreground font-medium flex items-center gap-2">
-              Memorial Message *
-              <Sparkles className="w-4 h-4 text-primary" />
-            </Label>
-            <Textarea
-              id="memoryText"
-              {...register('memoryText', { required: 'Memorial message is required' })}
-              placeholder="Share a loving memory, quote, or message..."
-              className="border-primary/30 focus:border-primary min-h-24"
-            />
-            {errors.memoryText && (
-              <p className="text-destructive text-sm mt-1">{errors.memoryText.message}</p>
-            )}
-            
-            {/* AI Suggestions */}
-            {aiSuggestions.length > 0 && (
-              <div className="mt-3">
-                <p className="text-xs text-muted-foreground mb-2">
-                  AI Suggestions (click to use):
-                </p>
-                <div className="space-y-2">
-                  {aiSuggestions.map((suggestion, index) => (
-                    <Button
-                      key={index}
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setValue('memoryText', suggestion)}
-                      className="w-full text-left h-auto p-3 text-xs leading-relaxed bg-primary/5 border-primary/20 hover:bg-primary/10"
-                    >
-                      {suggestion}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
+
 
           {/* GPS Location */}
           <div>

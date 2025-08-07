@@ -101,7 +101,7 @@ const MemorialGarden: React.FC<MemorialGardenProps> = ({ memorial }) => {
         {memorial.memoryText}
       </Text>
 
-      {/* Heavenly pillars */}
+      {/* Memorial pillars */}
       {[-3, 3].map((x, index) => (
         <group key={index} position={[x, 0, -2]}>
           <Box args={[0.3, 4, 0.3]} position={[0, 1, 0]}>

@@ -2,12 +2,22 @@ import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { QrCode, Camera, Share2, Download, Projector, Headphones } from 'lucide-react';
+import { QrCode, Camera, Share2, Download, Projector, Headphones, Menu, ChevronDown } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { HeavenlyGate } from './HeavenlyGate';
 import { QRCodeGenerator } from './QRCodeGenerator';
-import { HologramView } from './HologramView';
-import { BeamerView } from './BeamerView';
-import { VRView } from './VRView';
+
+import { CSS3DVR } from '../vr/CSS3DVR';
+import { VRErrorBoundary } from '../vr/VRErrorBoundary';
+import { EnhancedBeamerView } from '../beamer/EnhancedBeamerView';
+import { EnhancedARViewer } from './EnhancedARViewer';
+import { ARManager } from '../ar/ARManager';
+import islamicArchPlaceholder from '../../assets/islamic-arch-placeholder.jpg';
 
 export interface MemorialData {
   id: string;
@@ -31,18 +41,25 @@ interface MemorialCardProps {
   showAR?: boolean;
   onShare?: () => void;
   onDownload?: () => void;
+  onShowBeamer?: () => void;
+  onShowVR?: () => void;
+  onShowQR?: () => void;
 }
 
-export const MemorialCard: React.FC<MemorialCardProps> = ({
+export const MemorialCard = ({
   memorial,
   showAR = false,
   onShare,
-  onDownload
-}) => {
-  const [showHologram, setShowHologram] = useState(false);
+  onDownload,
+  onShowBeamer,
+  onShowVR,
+  onShowQR
+}: MemorialCardProps) => {
   const [showQR, setShowQR] = useState(false);
   const [showBeamer, setShowBeamer] = useState(false);
   const [showVR, setShowVR] = useState(false);
+  const [showEnhancedAR, setShowEnhancedAR] = useState(false);
+  const [showARManager, setShowARManager] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
   const cardVariants = {
@@ -79,11 +96,14 @@ export const MemorialCard: React.FC<MemorialCardProps> = ({
       transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
       className="relative max-w-md mx-auto"
     >
+
       <Card className={`relative overflow-hidden shadow-strong border-2 border-primary/30 ${getCardGradient()}`}>
         {/* Heavenly Gate Background */}
         <div className="absolute inset-0 opacity-20">
           <HeavenlyGate animate={showAR} />
         </div>
+
+
 
         {/* Main Card Content */}
         <div className="relative p-8 text-center">
@@ -97,24 +117,24 @@ export const MemorialCard: React.FC<MemorialCardProps> = ({
             GATE OF MEMORY
           </motion.h1>
 
-          {/* Photo Container with Heavenly Glow */}
+          {/* Photo Container */}
           <motion.div 
             className="relative mb-6"
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.5, duration: 0.6 }}
           >
-            <div className="w-32 h-32 mx-auto rounded-full overflow-hidden shadow-heavenly border-4 border-primary/50">
-              <img 
-                src={memorial.photo} 
+            <div className="w-32 h-40 mx-auto rounded-lg overflow-hidden shadow-lg border-4 border-primary/50">
+              <img
+                src={memorial.photo || islamicArchPlaceholder}
                 alt={memorial.name}
-                className="w-full h-full object-cover animate-heavenly-glow"
+                className="w-full h-full object-cover"
               />
             </div>
-            
-            {/* Holographic overlay effect */}
+
+            {/* AR overlay effect */}
             {showAR && (
-              <div className="absolute inset-0 bg-gradient-hologram rounded-full animate-shimmer" />
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-lg animate-pulse" />
             )}
           </motion.div>
 
@@ -131,101 +151,32 @@ export const MemorialCard: React.FC<MemorialCardProps> = ({
             <h3 className="text-2xl font-bold text-primary mb-3">
               of {memorial.name}
             </h3>
-            <p className="text-sm text-muted-foreground mb-2">
-              {memorial.birthDate} - {memorial.deathDate}
-            </p>
-            <p className="text-sm memorial-text italic px-4">
-              {memorial.memoryText}
-            </p>
+
           </motion.div>
 
+
+
           {/* QR Code Section */}
-          <motion.div 
+          <motion.div
             className="mb-6"
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            transition={{ delay: 0.9, type: "spring" }}
+            transition={{ delay: 1.1, type: "spring" }}
           >
-            <div className="flex flex-col items-center">
-              <p className="text-sm text-muted-foreground mb-2">
-                Scan with your camera to view the hologram
+            <div className="flex items-center justify-between gap-4">
+              <p className="text-sm text-muted-foreground flex-1">
+                Scan QR code with your camera to view hologram
               </p>
-              <div className="w-20 h-20 bg-foreground p-2 rounded">
-                <QRCodeGenerator 
+              <div className="w-20 h-20 flex-shrink-0">
+                <QRCodeGenerator
                   data={`${window.location.origin}/memorial/${memorial.id}`}
-                  size={64}
+                  size={80}
                 />
               </div>
             </div>
           </motion.div>
 
-          {/* Action Buttons */}
-          <motion.div 
-            className="grid grid-cols-3 gap-2 max-w-sm mx-auto"
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 1.1 }}
-          >
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowHologram(!showHologram)}
-              className="bg-primary/10 border-primary hover:bg-primary hover:text-primary-foreground"
-            >
-              <Camera className="w-4 h-4 mr-1" />
-              AR View
-            </Button>
-            
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowBeamer(true)}
-              className="bg-primary/10 border-primary hover:bg-primary hover:text-primary-foreground"
-            >
-              <Projector className="w-4 h-4 mr-1" />
-              Beamer
-            </Button>
 
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowVR(true)}
-              className="bg-primary/10 border-primary hover:bg-primary hover:text-primary-foreground"
-            >
-              <Headphones className="w-4 h-4 mr-1" />
-              VR
-            </Button>
-            
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowQR(!showQR)}
-              className="bg-primary/10 border-primary hover:bg-primary hover:text-primary-foreground"
-            >
-              <QrCode className="w-4 h-4 mr-1" />
-              QR Code
-            </Button>
-            
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onShare}
-              className="bg-primary/10 border-primary hover:bg-primary hover:text-primary-foreground"
-            >
-              <Share2 className="w-4 h-4 mr-1" />
-              Share
-            </Button>
-            
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onDownload}
-              className="bg-primary/10 border-primary hover:bg-primary hover:text-primary-foreground"
-            >
-              <Download className="w-4 h-4 mr-1" />
-              Print
-            </Button>
-          </motion.div>
         </div>
 
         {/* Floating particles effect */}
@@ -252,28 +203,95 @@ export const MemorialCard: React.FC<MemorialCardProps> = ({
         </div>
       </Card>
 
-      {/* Hologram Modal */}
-      {showHologram && (
-        <HologramView 
-          memorial={memorial}
-          onClose={() => setShowHologram(false)}
-        />
-      )}
+      {/* Share and Print Buttons - Below Template */}
+      <motion.div
+        className="flex gap-3 justify-center mt-6"
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 1.2 }}
+      >
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={onShare}
+          className="bg-primary/10 border-primary hover:bg-primary hover:text-primary-foreground"
+        >
+          <Share2 className="w-4 h-4 mr-1" />
+          Share
+        </Button>
 
-      {/* Beamer View */}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={onDownload}
+          className="bg-primary/10 border-primary hover:bg-primary hover:text-primary-foreground"
+        >
+          <Download className="w-4 h-4 mr-1" />
+          Print
+        </Button>
+      </motion.div>
+
+      {/* Enhanced Beamer View */}
       {showBeamer && (
-        <BeamerView 
+        <EnhancedBeamerView
           memorial={memorial}
           onClose={() => setShowBeamer(false)}
         />
       )}
 
-      {/* VR View */}
+      {/* VR Memorial Garden */}
       {showVR && (
-        <VRView 
+        <VRErrorBoundary onClose={() => setShowVR(false)}>
+          <CSS3DVR
+            memorial={memorial}
+            onClose={() => setShowVR(false)}
+          />
+        </VRErrorBoundary>
+      )}
+
+      {/* Enhanced AR View */}
+      {showEnhancedAR && (
+        <EnhancedARViewer
           memorial={memorial}
-          onClose={() => setShowVR(false)}
+          onClose={() => setShowEnhancedAR(false)}
         />
+      )}
+
+      {/* AR Manager */}
+      {showARManager && (
+        <ARManager
+          memorial={memorial}
+          onClose={() => setShowARManager(false)}
+        />
+      )}
+
+      {/* QR Code Modal */}
+      {showQR && (
+        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.8, opacity: 0 }}
+            className="bg-white rounded-lg p-8 max-w-md w-full text-center"
+          >
+            <h2 className="text-2xl font-bold text-primary mb-4">QR Code</h2>
+            <p className="text-muted-foreground mb-6">
+              Scan with your camera to view hologram
+            </p>
+            <div className="w-48 h-48 mx-auto mb-6 flex items-center justify-center">
+              <QRCodeGenerator
+                data={`${window.location.origin}/memorial/${memorial.id}`}
+                size={192}
+              />
+            </div>
+            <Button
+              onClick={() => setShowQR(false)}
+              className="bg-primary hover:bg-primary/90"
+            >
+              Close
+            </Button>
+          </motion.div>
+        </div>
       )}
     </motion.div>
   );

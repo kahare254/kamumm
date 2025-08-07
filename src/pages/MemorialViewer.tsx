@@ -11,10 +11,10 @@ const sampleMemorials: Record<string, MemorialData> = {
   'naomi-n': {
     id: 'naomi-n',
     name: 'Naomi N.',
-    birthDate: '1945-03-15',
-    deathDate: '2024-01-10',
+    birthDate: '',
+    deathDate: '',
     photo: '/lovable-uploads/97f52ec1-ca70-49d3-9242-069944655158.png',
-    memoryText: 'A beautiful soul who brought joy and warmth to everyone she met. Her legacy of love and compassion will live on forever in our hearts.',
+    memoryText: '',
     cardType: 'female',
     gpsLocation: {
       lat: 40.7589,

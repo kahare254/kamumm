@@ -1,13 +1,22 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { X, RotateCcw, ZoomIn, ZoomOut } from 'lucide-react';
+import { X, RotateCcw, ZoomIn, ZoomOut, Camera, Smartphone, Volume2, VolumeX, Settings, Info } from 'lucide-react';
 import { MemorialData } from './MemorialCard';
+import islamicArchPlaceholder from '../../assets/islamic-arch-placeholder.jpg';
 
 interface ARViewerProps {
   memorial: MemorialData;
   onClose: () => void;
+}
+
+interface ARSettings {
+  autoRotate: boolean;
+  showInstructions: boolean;
+  enableAudio: boolean;
+  cameraControls: boolean;
+  environmentLighting: 'neutral' | 'city' | 'forest' | 'studio';
 }
 
 export const ARViewer: React.FC<ARViewerProps> = ({ memorial, onClose }) => {
@@ -132,7 +141,7 @@ export const ARViewer: React.FC<ARViewerProps> = ({ memorial, onClose }) => {
             dangerouslySetInnerHTML={{
               __html: `
                 <model-viewer
-                  src="/models/heavenly-gate.glb"
+                  src="/models/memorial-gate.glb"
                   alt="AR Memorial for ${memorial.name}"
                   ar
                   ar-modes="webxr scene-viewer quick-look"
