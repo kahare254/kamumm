@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { MemorialData } from '@/components/memorial/MemorialCard';
 import { CSS3DVR } from '@/components/vr/CSS3DVR';
+import { VRMemorialGarden } from '@/components/vr/VRMemorialGarden';
 import { VRErrorBoundary } from '@/components/vr/VRErrorBoundary';
 import { EnhancedARViewer } from '@/components/memorial/EnhancedARViewer';
 import { EnhancedBeamerView } from '@/components/beamer/EnhancedBeamerView';
@@ -28,6 +29,7 @@ const VRExperience: React.FC = () => {
     photo: '/lovable-uploads/97f52ec1-ca70-49d3-9242-069944655158.png',
     memoryText: 'A loving mother, devoted wife, and cherished friend. Her kindness and warmth touched everyone she met. Forever in our hearts.',
     cardType: 'female',
+    arAnimationUrl: `/models/memorial-gate-${'female'}.glb`,
     gpsLocation: {
       lat: 40.7589,
       lng: -73.9851,
@@ -185,7 +187,7 @@ const VRExperience: React.FC = () => {
         <>
           {selectedMode === 'vr' && (
             <VRErrorBoundary onClose={() => window.history.back()}>
-              <CSS3DVR
+              <VRMemorialGarden
                 memorial={sampleMemorial}
                 onClose={() => window.history.back()}
               />

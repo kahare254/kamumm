@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Plus, Eye, Headphones, ChevronDown, Camera, Projector } from 'lucide-react';
+import { Plus, Eye, Headphones, ChevronDown, Camera, Projector, Sparkles, Gem } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,10 +11,13 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { MemorialForm } from '@/components/memorial/MemorialForm';
-import { MemorialCard, MemorialData } from '@/components/memorial/MemorialCard';import { VRMemorialGarden } from '@/components/vr/VRMemorialGarden';
+import { MemorialCard, MemorialData } from '@/components/memorial/MemorialCard';
+import { VRMemorialGarden } from '@/components/vr/VRMemorialGarden';
 import { VRErrorBoundary } from '@/components/vr/VRErrorBoundary';
 import { EnhancedARViewer } from '@/components/memorial/EnhancedARViewer';
 import { EnhancedBeamerView } from '@/components/beamer/EnhancedBeamerView';
+import { ARManager } from '@/components/ar/ARManager';
+import { NFTTokenPlaceholder } from '@/components/memorial/NFTTokenPlaceholder';
 
 
 
@@ -26,6 +29,8 @@ const Index = () => {
   const [showVR, setShowVR] = useState(false);
   const [showEnhancedAR, setShowEnhancedAR] = useState(false);
   const [showBeamer, setShowBeamer] = useState(false);
+  const [showARManager, setShowARManager] = useState(false);
+  const [showNFT, setShowNFT] = useState(false);
   const [sampleMemorial] = useState<MemorialData>({
     id: 'sample',
     name: 'Naomi N.',
@@ -118,7 +123,7 @@ const Index = () => {
                     size="lg"
                     className="border-purple-500 text-purple-500 hover:bg-purple-500 hover:text-white px-6 py-4 text-lg"
                   >
-                    <span className="mr-2">Options</span>
+                    <span className="mr-2">Default</span>
                     <ChevronDown className="w-5 h-5" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -142,6 +147,20 @@ const Index = () => {
                     <div>
                       <div className="font-medium">Beamer Mode</div>
                       <div className="text-xs text-muted-foreground">Projector presentation view</div>
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => { setSelectedMode('ar'); setShowARManager(true); }} className="cursor-pointer">
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    <div>
+                      <div className="font-medium">Hologram View</div>
+                      <div className="text-xs text-muted-foreground">Interactive holographic experience</div>
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setShowNFT(true)} className="cursor-pointer">
+                    <Gem className="w-4 h-4 mr-2" />
+                    <div>
+                      <div className="font-medium">NFT Token</div>
+                      <div className="text-xs text-muted-foreground">View memorial as NFT</div>
                     </div>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -189,6 +208,22 @@ const Index = () => {
         <EnhancedARViewer
           memorial={sampleMemorial}
           onClose={() => setShowEnhancedAR(false)}
+        />
+      )}
+
+      {/* AR Manager */}
+      {showARManager && (
+        <ARManager
+          memorial={sampleMemorial}
+          onClose={() => setShowARManager(false)}
+        />
+      )}
+
+      {/* NFT Token Placeholder */}
+      {showNFT && (
+        <NFTTokenPlaceholder
+          memorialId={sampleMemorial.id}
+          onClose={() => setShowNFT(false)}
         />
       )}
     </div>

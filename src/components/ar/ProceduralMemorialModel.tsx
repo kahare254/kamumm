@@ -1,6 +1,7 @@
 import React, { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Box, Sphere, Cylinder, Plane, Text, useTexture } from '@react-three/drei';
+import { GLBMemorialModel } from './GLBMemorialModel';
 import { MemorialData } from '../memorial/MemorialCard';
 import * as THREE from 'three';
 import islamicArchPlaceholder from '../../assets/islamic-arch-placeholder.jpg';
@@ -11,11 +12,15 @@ interface ProceduralMemorialModelProps {
   scale?: number;
 }
 
-export const ProceduralMemorialModel: React.FC<ProceduralMemorialModelProps> = ({ 
-  memorial, 
+export const ProceduralMemorialModel: React.FC<ProceduralMemorialModelProps> = ({
+  memorial,
   animate = true,
-  scale = 1 
+  scale = 1
 }) => {
+  if (memorial.arAnimationUrl) {
+    return <GLBMemorialModel memorial={memorial} scale={scale} />;
+  }
+
   const groupRef = useRef<THREE.Group>(null);
   const photoTexture = useTexture(memorial.photo || islamicArchPlaceholder);
 

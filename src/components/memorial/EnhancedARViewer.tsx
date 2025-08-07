@@ -9,6 +9,7 @@ import islamicArchPlaceholder from '../../assets/islamic-arch-placeholder.jpg';
 interface EnhancedARViewerProps {
   memorial: MemorialData;
   onClose: () => void;
+  holographic?: boolean;
 }
 
 interface ARSettings {
@@ -20,14 +21,15 @@ interface ARSettings {
   arScale: 'auto' | 'fixed';
 }
 
-export const EnhancedARViewer: React.FC<EnhancedARViewerProps> = ({ memorial, onClose }) => {
+export const EnhancedARViewer: React.FC<EnhancedARViewerProps> = ({ memorial, onClose, holographic = false }) => {
   const modelViewerRef = useRef<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isARActive, setIsARActive] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showInstructions, setShowInstructions] = useState(true);
   const [speechEnabled, setSpeechEnabled] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [aiGeneratedMemory, setAiGeneratedMemory] = useState<string | null>(null);
+  const [error, setError, ] = useState<string | null>(null);
   const [settings, setSettings] = useState<ARSettings>({
     autoRotate: true,
     showInstructions: true,
@@ -36,6 +38,19 @@ export const EnhancedARViewer: React.FC<EnhancedARViewerProps> = ({ memorial, on
     environmentLighting: 'neutral',
     arScale: 'auto'
   });
+
+  const generateAIMemory = useCallback(() => {
+    const memories = [
+      `A whisper of ${memorial.name}'s laughter echoes through the digital garden.`, 
+      `The warmth of ${memorial.name}'s spirit, forever blooming in our hearts.`, 
+      `In this sacred space, ${memorial.name}'s kindness shines like a beacon.`, 
+      `A timeless memory of ${memorial.name}'s gentle soul, preserved in light.`, 
+      `The wisdom of ${memorial.name}'s journey, now a guiding star.`
+    ];
+    const randomMemory = memories[Math.floor(Math.random() * memories.length)];
+    setAiGeneratedMemory(randomMemory);
+    toast.info("AI Memory Generated", { description: randomMemory });
+  }, [memorial]);
 
   const handleSpeech = useCallback(() => {
     if (!speechEnabled) {
@@ -236,6 +251,25 @@ export const EnhancedARViewer: React.FC<EnhancedARViewerProps> = ({ memorial, on
 
           #memorial-3d-container:active #memorial-structure {
             animation-play-state: paused;
+          }
+
+          .holographic #memorial-structure {
+            animation: holographic-float 6s ease-in-out infinite alternate;
+          }
+
+          @keyframes holographic-float {
+            0% {
+              transform: translateY(0px) rotateY(0deg) rotateX(0deg) scale(1);
+              filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.8));
+            }
+            50% {
+              transform: translateY(-20px) rotateY(180deg) rotateX(10deg) scale(1.05);
+              filter: drop-shadow(0 0 25px rgba(0, 255, 255, 1));
+            }
+            100% {
+              transform: translateY(0px) rotateY(360deg) rotateX(0deg) scale(1);
+              filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.8));
+            }
           }
         </style>
 
@@ -564,6 +598,16 @@ export const EnhancedARViewer: React.FC<EnhancedARViewerProps> = ({ memorial, on
             >
               <X className="w-4 h-4" />
             </Button>
+            {holographic && (
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={generateAIMemory}
+                className="bg-card/90 backdrop-blur-md hover:bg-card border border-primary/20"
+              >
+                <Sparkles className="w-4 h-4" />
+              </Button>
+            )}
           </div>
         </motion.div>
 
@@ -685,7 +729,8 @@ export const EnhancedARViewer: React.FC<EnhancedARViewerProps> = ({ memorial, on
         </AnimatePresence>
 
         {/* AR Model Viewer */}
-        <div className="flex-1 relative">
+        <div
+          className={`flex-1 relative ${holographic ? 'holographic' : ''}`}>
           {isLoading ? (
             <motion.div
               className="absolute inset-0 flex items-center justify-center"
@@ -733,6 +778,11 @@ export const EnhancedARViewer: React.FC<EnhancedARViewerProps> = ({ memorial, on
               {memorial.memoryText && (
                 <p className="text-sm italic text-foreground/80 mb-3">
                   "{memorial.memoryText}"
+                </p>
+              )}
+              {aiGeneratedMemory && (
+                <p className="text-sm text-primary/80 font-medium mt-3">
+                  AI Memory: "{aiGeneratedMemory}"
                 </p>
               )}
               {memorial.gpsLocation && (

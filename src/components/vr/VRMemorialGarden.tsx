@@ -16,12 +16,25 @@ import {
   MeshWobbleMaterial,
   Sparkles
 } from '@react-three/drei';
+import { GLBMemorialModel } from '../ar/GLBMemorialModel';
 import { X, Headphones, Volume2, VolumeX, Eye, Heart, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { MemorialData } from '../memorial/MemorialCard';
 import islamicArchPlaceholder from '../../assets/islamic-arch-placeholder.jpg';
 import * as THREE from 'three';
+
+// Helper function to calculate age from birth and death dates
+function calculateAge(birthDate: string, deathDate: string): number {
+  const birth = new Date(birthDate);
+  const death = new Date(deathDate);
+  let age = death.getFullYear() - birth.getFullYear();
+  const m = death.getMonth() - birth.getMonth();
+  if (m < 0 || (m === 0 && death.getDate() < birth.getDate())) {
+    age--;
+  }
+  return age;
+}
 
 interface VRMemorialGardenProps {
   memorial: MemorialData;
@@ -202,34 +215,62 @@ const SacredGeometryMemorial: React.FC<{ memorial: MemorialData }> = ({ memorial
         </Text>
       </Float>
 
-      {/* Dates */}
-      <Text
-        position={[0, -1.8, 0]}
-        fontSize={0.25}
-        color="#CCCCCC"
-        anchorX="center"
-        anchorY="middle"
-        outlineWidth={0.015}
-        outlineColor="#000000"
-      >
-        {memorial.birthDate} - {memorial.deathDate}
-      </Text>
-
-      {/* Memory Text */}
-      {memorial.memoryText && (
+      {/* Dates with Life Span Display */}
+      <group position={[0, -1.8, 0]}>
         <Text
-          position={[0, -2.3, 0]}
-          fontSize={0.18}
-          color="#DDDDDD"
+          position={[0, 0.3, 0]}
+          fontSize={0.25}
+          color="#FFFFFF"
           anchorX="center"
           anchorY="middle"
-          maxWidth={8}
-          textAlign="center"
-          outlineWidth={0.008}
+          outlineWidth={0.015}
           outlineColor="#000000"
         >
-          "{memorial.memoryText}"
+          {memorial.birthDate} - {memorial.deathDate}
         </Text>
+        
+        {memorial.birthDate && memorial.deathDate && (
+          <Text
+            position={[0, 0, 0]}
+            fontSize={0.2}
+            color="#CCCCCC"
+            anchorX="center"
+            anchorY="middle"
+            outlineWidth={0.01}
+            outlineColor="#000000"
+          >
+            {`${calculateAge(memorial.birthDate, memorial.deathDate)} years of beautiful life`}
+          </Text>
+        )}
+      </group>
+
+      {/* Memory Text with Decorative Elements */}
+      {memorial.memoryText && (
+        <group position={[0, -2.5, 0]}>
+          {/* Decorative Line */}
+          <Box position={[0, 0.3, 0]} args={[4, 0.02, 0.01]}>  
+            <meshStandardMaterial color="#FFD700" />  
+          </Box>
+          
+          <Text
+            position={[0, 0, 0]}
+            fontSize={0.18}
+            color="#FFFFFF"
+            anchorX="center"
+            anchorY="middle"
+            maxWidth={8}
+            textAlign="center"
+            outlineWidth={0.01}
+            outlineColor="#000000"
+          >
+            "{memorial.memoryText}"
+          </Text>
+          
+          {/* Decorative Line */}
+          <Box position={[0, -0.3, 0]} args={[4, 0.02, 0.01]}>  
+            <meshStandardMaterial color="#FFD700" />  
+          </Box>
+        </group>
       )}
 
       {/* Sparkles Effect */}
@@ -263,7 +304,7 @@ const GardenEnvironment: React.FC = () => {
       </Plane>
 
       {/* Mystical Trees */}
-      {[...Array(12)].map((_, i) => {
+      {[...Array(25)].map((_, i) => {
         const angle = (i / 12) * Math.PI * 2;
         const radius = 15 + Math.random() * 10;
         return (
@@ -358,12 +399,26 @@ export const VRMemorialGarden: React.FC<VRMemorialGardenProps> = ({ memorial, on
     }
   };
 
-  const memoryOrbs = [
-    { position: [4, 3, 2] as [number, number, number], color: "#FF69B4", text: "Love" },
-    { position: [-3, 4, -1] as [number, number, number], color: "#87CEEB", text: "Joy" },
-    { position: [2, 5, -4] as [number, number, number], color: "#FFD700", text: "Hope" },
-    { position: [-4, 3, 3] as [number, number, number], color: "#98FB98", text: "Peace" }
-  ];
+  const memoryOrbs = memorial.memoryText
+    ? memorial.memoryText.split(/[.!?]+/).filter(s => s.trim().length > 0).flatMap((sentence, i) => 
+        Array.from({ length: 3 }).map((_, j) => {
+          const angle = (i * 3 + j) / 15 * Math.PI * 2;
+          const radius = 4 + Math.random() * 6;
+          return {
+            position: [Math.cos(angle) * radius, 2 + Math.random() * 4, Math.sin(angle) * radius] as [number, number, number],
+            color: ['#FF69B4', '#87CEEB', '#FFD700', '#98FB98', '#FFA07A', '#BA55D3', '#ADD8E6', '#F0E68C'][ (i * 3 + j) % 8],
+            text: sentence.trim(),
+          };
+        })
+      )
+    : [
+        { position: [4, 3, 2] as [number, number, number], color: "#FF69B4", text: "Love" },
+        { position: [-3, 4, -1] as [number, number, number], color: "#87CEEB", text: "Joy" },
+        { position: [2, 5, -4] as [number, number, number], color: "#FFD700", text: "Hope" },
+        { position: [-4, 3, 3] as [number, number, number], color: "#98FB98", text: "Peace" },
+        { position: [5, 4, -3] as [number, number, number], color: "#FFA07A", text: "Courage" },
+        { position: [-5, 5, 2] as [number, number, number], color: "#BA55D3", text: "Wisdom" },
+      ];
 
   // Error fallback component
   if (hasError) {
@@ -470,6 +525,7 @@ export const VRMemorialGarden: React.FC<VRMemorialGardenProps> = ({ memorial, on
               <Sky sunPosition={[100, 20, 100]} />
               <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
               <Environment preset="night" />
+              <fog attach="fog" args={['#2a2a3a', 10, 60]} />
 
               {/* Lighting */}
               <ambientLight intensity={0.4} />
@@ -486,7 +542,11 @@ export const VRMemorialGarden: React.FC<VRMemorialGardenProps> = ({ memorial, on
               <GardenEnvironment />
 
               {/* Sacred Memorial */}
-              <SacredGeometryMemorial memorial={memorial} />
+              {memorial.arAnimationUrl ? (
+                <GLBMemorialModel memorial={memorial} />
+              ) : (
+                <SacredGeometryMemorial memorial={memorial} />
+              )}
 
               {/* Memory Orbs */}
               {showMemoryOrbs && memoryOrbs.map((orb, i) => (

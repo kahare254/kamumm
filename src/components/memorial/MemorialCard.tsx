@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { QrCode, Camera, Share2, Download, Projector, Headphones, Menu, ChevronDown } from 'lucide-react';
+import { QrCode, Camera, Share2, Download, Projector, Headphones, Menu, ChevronDown, Gem, Sparkles } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,7 +10,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { HeavenlyGate } from './HeavenlyGate';
-import { QRCodeGenerator } from './QRCodeGenerator';import { VRMemorialGarden } from '../vr/VRMemorialGarden';
+import { QRCodeGenerator } from './QRCodeGenerator';
+import { NFTTokenPlaceholder } from './NFTTokenPlaceholder';
+import { VRMemorialGarden } from '../vr/VRMemorialGarden';
 import { VRErrorBoundary } from '../vr/VRErrorBoundary';
 import { EnhancedBeamerView } from '../beamer/EnhancedBeamerView';
 import { EnhancedARViewer } from './EnhancedARViewer';
@@ -32,6 +34,7 @@ export interface MemorialData {
     lng: number;
     name: string;
   };
+  arAnimationUrl?: string;
 }
 
 interface MemorialCardProps {
@@ -58,6 +61,7 @@ export const MemorialCard = ({
   const [showVR, setShowVR] = useState(false);
   const [showEnhancedAR, setShowEnhancedAR] = useState(false);
   const [showARManager, setShowARManager] = useState(false);
+  const [showNFT, setShowNFT] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
   const cardVariants = {
@@ -227,6 +231,8 @@ export const MemorialCard = ({
           <Download className="w-4 h-4 mr-1" />
           Print
         </Button>
+
+        
       </motion.div>
 
       {/* Enhanced Beamer View */}
@@ -258,6 +264,14 @@ export const MemorialCard = ({
         <ARManager
           memorial={memorial}
           onClose={() => setShowARManager(false)}
+        />
+      )}
+
+      {/* NFT Token Placeholder */}
+      {showNFT && (
+        <NFTTokenPlaceholder
+          memorialId={memorial.id}
+          onClose={() => setShowNFT(false)}
         />
       )}
 

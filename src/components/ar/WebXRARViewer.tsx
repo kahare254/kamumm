@@ -1,7 +1,8 @@
 import React, { useState, useRef, Suspense, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls, Environment, Text, Sphere, Box, Plane, useTexture } from '@react-three/drei';
+import { Box, Sphere, Cylinder, Plane, Text, useTexture } from '@react-three/drei';
+import { GLBMemorialModel } from './GLBMemorialModel';
 import { X, Camera, Volume2, VolumeX, Settings, Smartphone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -15,10 +16,14 @@ interface WebXRARViewerProps {
 }
 
 // AR Memorial Scene Component
-const ARMemorialScene: React.FC<{ memorial: MemorialData; isARActive: boolean }> = ({ 
-  memorial, 
-  isARActive 
+const ARMemorialScene: React.FC<{ memorial: MemorialData; isARActive: boolean }> = ({
+  memorial,
+  isARActive
 }) => {
+  if (memorial.arAnimationUrl) {
+    return <GLBMemorialModel memorial={memorial} />;
+  }
+
   const groupRef = useRef<THREE.Group>(null);
   const photoTexture = useTexture(memorial.photo || islamicArchPlaceholder);
 

@@ -261,6 +261,8 @@ export const ARManager: React.FC<ARManagerProps> = ({ memorial, onClose }) => {
         return <WebXRARViewer memorial={memorial} onClose={onClose} />;
       case 'model-viewer':
         return <EnhancedARViewer memorial={memorial} onClose={onClose} />;
+      case 'hologram':
+        return <EnhancedARViewer memorial={memorial} onClose={onClose} holographic />;
       case 'fallback':
       default:
         return <WebXRARViewer memorial={memorial} onClose={onClose} />;
