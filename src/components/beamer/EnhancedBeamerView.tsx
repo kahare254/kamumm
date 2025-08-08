@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Play, Pause, ChevronLeft, ChevronRight, Volume2, VolumeX, Monitor, Presentation, Reflect, Settings, Maximize } from 'lucide-react';
+import { X, Play, Pause, ChevronLeft, ChevronRight, Volume2, VolumeX, Monitor, Presentation, Settings, Maximize } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { MemorialData } from '../memorial/MemorialCard';
 import islamicArchPlaceholder from '../../assets/islamic-arch-placeholder.jpg';
@@ -50,7 +50,7 @@ export const EnhancedBeamerView: React.FC<EnhancedBeamerViewProps> = ({ memorial
     {
       type: 'photo',
       content: {
-        image: memorial.photo || islamicArchPlaceholder,
+        image: memorial.photo_path || islamicArchPlaceholder,
         caption: memorial.name
       }
     },

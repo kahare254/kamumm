@@ -93,7 +93,7 @@ export const MemorialForm: React.FC<MemorialFormProps> = ({ onSubmit, onCancel }
       deathDate: data.deathDate,
       memoryText: '',
       cardType: data.cardType,
-      photo: data.photoPath, // ✅ correct uploaded path
+      photo_path: data.photoPath,
       gpsLocation: gpsLocation ? {
         lat: gpsLocation.lat,
         lng: gpsLocation.lng,

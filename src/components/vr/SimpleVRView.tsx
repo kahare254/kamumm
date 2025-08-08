@@ -128,7 +128,7 @@ const VRMemorialScene: React.FC<{ memorial: MemorialData }> = ({ memorial }) => 
   const groupRef = useRef<THREE.Group>(null);
   const cardRef = useRef<THREE.Group>(null);
   const { camera } = useThree();
-  const photoTexture = useTexture(memorial.photo || islamicArchPlaceholder);
+  const photoTexture = useTexture(memorial.photo_path || islamicArchPlaceholder);
 
   // 360° continuous rotation
   useFrame((state) => {

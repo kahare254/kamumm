@@ -20,7 +20,7 @@ const ARDemo: React.FC = () => {
     name: 'Sarah Johnson',
     birthDate: '1985-03-15',
     deathDate: '2023-11-20',
-    photo: '/lovable-uploads/97f52ec1-ca70-49d3-9242-069944655158.png',
+    photo_path: '/lovable-uploads/97f52ec1-ca70-49d3-9242-069944655158.png',
     memoryText: 'A loving mother, devoted wife, and cherished friend. Her kindness and warmth touched everyone she met. Forever in our hearts.',
     cardType: 'female',
     gpsLocation: {
@@ -120,12 +120,6 @@ const ARDemo: React.FC = () => {
             </h2>
             <MemorialCard
               memorial={sampleMemorial}
-              onShowHologram={() => console.log('Hologram clicked')}
-              onShowBeamer={() => console.log('Beamer clicked')}
-              onShowVR={() => console.log('VR clicked')}
-              onShowQR={() => console.log('QR clicked')}
-              onShare={() => console.log('Share clicked')}
-              onDownload={() => console.log('Download clicked')}
             />
           </Card>
         </motion.div>
@@ -182,7 +176,7 @@ const ARDemo: React.FC = () => {
             </div>
           </Card>
         </motion.div>
-      </div>
+      </motion.div>
 
       {/* AR Viewers */}
       {showARManager && (

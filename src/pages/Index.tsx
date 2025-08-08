@@ -31,20 +31,6 @@ const Index = () => {
   const [showBeamer, setShowBeamer] = useState(false);
   const [showARManager, setShowARManager] = useState(false);
   const [showNFT, setShowNFT] = useState(false);
-  const [sampleMemorial] = useState<MemorialData>({
-    id: 'sample',
-    name: 'Naomi N.',
-    birthDate: '1945-03-15',
-    deathDate: '2024-01-10',
-    photo: '/lovable-uploads/97f52ec1-ca70-49d3-9242-069944655158.png',
-    memoryText: 'A beautiful soul who brought joy and warmth to everyone she met. Her legacy of love and compassion will live on forever in our hearts.',
-    cardType: 'female',
-    gpsLocation: {
-      lat: 40.7589,
-      lng: -73.9851,
-      name: 'Memorial Garden, New York'
-    }
-  });
   const [memorials, setMemorials] = useState<MemorialData[]>([]);
 
   const [selectedMemorial, setSelectedMemorial] = useState<MemorialData | null>(null);
@@ -80,7 +66,7 @@ const Index = () => {
         death_date: data.deathDate,
         memory_text: data.memoryText,
         card_type: data.cardType,
-        photo_path: data.photo, // assuming you're passing the uploaded photo path
+        photo_path: data.photo_path, 
         gps_latitude: data.gpsLocation?.lat,
         gps_longitude: data.gpsLocation?.lng,
         gps_location_name: data.gpsLocation?.name,
@@ -178,42 +164,95 @@ const Index = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuItem onClick={() => { setSelectedMode('vr');    setSelectedMemorial(sampleMemorial); 
- setShowVR(true); }} className="cursor-pointer">
+                  <DropdownMenuItem
+                    onClick={() => {
+                      if (selectedMemorial) {
+                        setSelectedMode('vr');
+                        setShowVR(true);
+                      } else {
+                        alert('Please select a memorial first.');
+                      }
+                    }}
+                    className="cursor-pointer"
+                  >
                     <Headphones className="w-4 h-4 mr-2" />
                     <div>
                       <div className="font-medium">VR Memorial Garden</div>
                       <div className="text-xs text-muted-foreground">Sacred VR experience with memory orbs</div>
                     </div>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => { setSelectedMode('ar'); setSelectedMemorial(sampleMemorial); setShowEnhancedAR(true); }} className="cursor-pointer">
+
+                  <DropdownMenuItem
+                    onClick={() => {
+                      if (selectedMemorial) {
+                        setSelectedMode('ar');
+                        setShowEnhancedAR(true);
+                      } else {
+                        alert('Please select a memorial first.');
+                      }
+                    }}
+                    className="cursor-pointer"
+                  >
                     <Camera className="w-4 h-4 mr-2" />
                     <div>
                       <div className="font-medium">AR Experience</div>
                       <div className="text-xs text-muted-foreground">Augmented reality memorial viewing</div>
                     </div>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => { setSelectedMode('beamer'); setSelectedMemorial(sampleMemorial); setShowBeamer(true); }} className="cursor-pointer">
+
+                  <DropdownMenuItem
+                    onClick={() => {
+                      if (selectedMemorial) {
+                        setSelectedMode('beamer');
+                        setShowBeamer(true);
+                      } else {
+                        alert('Please select a memorial first.');
+                      }
+                    }}
+                    className="cursor-pointer"
+                  >
                     <Projector className="w-4 h-4 mr-2" />
                     <div>
                       <div className="font-medium">Beamer Mode</div>
                       <div className="text-xs text-muted-foreground">Projector presentation view</div>
                     </div>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => { setSelectedMode('ar'); setSelectedMemorial(sampleMemorial);setShowARManager(true); }} className="cursor-pointer">
+
+                  <DropdownMenuItem
+                    onClick={() => {
+                      if (selectedMemorial) {
+                        setSelectedMode('ar');
+                        setShowARManager(true);
+                      } else {
+                        alert('Please select a memorial first.');
+                      }
+                    }}
+                    className="cursor-pointer"
+                  >
                     <Sparkles className="w-4 h-4 mr-2" />
                     <div>
                       <div className="font-medium">Hologram View</div>
                       <div className="text-xs text-muted-foreground">Interactive holographic experience</div>
                     </div>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => {setShowNFT(true); setSelectedMemorial(sampleMemorial);}} className="cursor-pointer">
+
+                  <DropdownMenuItem
+                    onClick={() => {
+                      if (selectedMemorial) {
+                        setShowNFT(true);
+                      } else {
+                        alert('Please select a memorial first.');
+                      }
+                    }}
+                    className="cursor-pointer"
+                  >
                     <Gem className="w-4 h-4 mr-2" />
                     <div>
                       <div className="font-medium">NFT Token</div>
                       <div className="text-xs text-muted-foreground">View memorial as NFT</div>
                     </div>
                   </DropdownMenuItem>
+
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
@@ -225,14 +264,16 @@ const Index = () => {
             {memorials.map(memorial => (
 
           <motion.div
-            key={memorial.id} 
+            key={memorial.id}
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2, duration: 0.6 }}
-            className="flex justify-center"
+            className={`flex justify-center mb-4 cursor-pointer ${selectedMemorial?.id === memorial.id ? 'ring-4 ring-purple-500 rounded-xl' : ''}`}
+            onClick={() => setSelectedMemorial(memorial)}
           >
             <MemorialCard memorial={memorial} showAR={false} />
           </motion.div>
+
           ))}
         </section>
 

@@ -24,7 +24,7 @@ export interface MemorialData {
   name: string;
   birthDate: string;
   deathDate: string;
-  photo: string;
+  photo_path: string; 
   memoryText: string;
   cardType: 'male' | 'female' | 'child';
   qrCode?: string;
@@ -128,7 +128,7 @@ export const MemorialCard = ({
           >
             <div className="w-32 h-40 mx-auto rounded-lg overflow-hidden shadow-lg border-4 border-primary/50">
               <img
-                src={`http://localhost:5000${memorial.photo}`}
+                src={`http://localhost:5000${memorial.photo_path}`}
                 alt={memorial.name}
                 className="w-full h-full object-cover"
               />

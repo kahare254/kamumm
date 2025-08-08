@@ -25,7 +25,7 @@ const ARMemorialScene: React.FC<{ memorial: MemorialData; isARActive: boolean }>
   }
 
   const groupRef = useRef<THREE.Group>(null);
-  const photoTexture = useTexture(memorial.photo || islamicArchPlaceholder);
+  const photoTexture = useTexture(memorial.photo_path || islamicArchPlaceholder);
 
   useFrame((state) => {
     if (groupRef.current && !isARActive) {

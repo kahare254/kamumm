@@ -143,7 +143,7 @@ const MobileVRScene: React.FC<{ memorial: MemorialData; gyroData: GyroscopeData;
         <mesh position={[0, 0, 0.61]}>
           <planeGeometry args={[1, 1]} />
           <meshBasicMaterial>
-            <primitive object={new THREE.TextureLoader().load(memorial.photo || islamicArchPlaceholder)} />
+            <primitive object={new THREE.TextureLoader().load(memorial.photo_path || islamicArchPlaceholder)} />
           </meshBasicMaterial>
         </mesh>
 

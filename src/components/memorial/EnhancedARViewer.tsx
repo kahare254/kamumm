@@ -2,9 +2,10 @@ import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { X, Camera, Volume2, VolumeX, Settings, Info, RotateCcw, ZoomIn, ZoomOut, Smartphone, Monitor } from 'lucide-react';
+import { X, Camera, Volume2, VolumeX, Settings, Info, RotateCcw, ZoomIn, ZoomOut, Smartphone, Monitor, Sparkles } from 'lucide-react';
 import { MemorialData } from './MemorialCard';
 import islamicArchPlaceholder from '../../assets/islamic-arch-placeholder.jpg';
+import { toast } from 'sonner';
 
 interface EnhancedARViewerProps {
   memorial: MemorialData;
@@ -72,7 +73,7 @@ export const EnhancedARViewer: React.FC<EnhancedARViewerProps> = ({ memorial, on
   }, [memorial, speechEnabled]);
 
   const generateMemorialModel = useCallback(() => {
-    const photoTexture = memorial.photo || islamicArchPlaceholder;
+    const photoTexture = memorial.photo_path || islamicArchPlaceholder;
 
     // Create a simple HTML-based 3D memorial since GLB models are missing
     return `

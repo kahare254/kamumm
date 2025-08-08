@@ -97,7 +97,25 @@ const MemoryOrb: React.FC<{ position: [number, number, number]; color: string; t
 // Sacred Geometry Memorial
 const SacredGeometryMemorial: React.FC<{ memorial: MemorialData }> = ({ memorial }) => {
   const groupRef = useRef<THREE.Group>(null);
-  const photoTexture = useTexture(memorial.photo || islamicArchPlaceholder);
+const [photoTexture, setPhotoTexture] = useState<THREE.Texture | null>(null);
+
+        useEffect(() => {
+          const loader = new THREE.TextureLoader();
+
+          if (memorial.photo_path) {
+            loader.load(
+              memorial.photo_path,
+              (texture) => setPhotoTexture(texture),
+              undefined,
+              (err) => {
+                console.error('Failed to load memorial photo, using fallback.', err);
+                loader.load(islamicArchPlaceholder, setPhotoTexture);
+              }
+            );
+          } else {
+            loader.load(islamicArchPlaceholder, setPhotoTexture);
+          }
+        }, [memorial.photo_path]);
 
   useFrame((state) => {
     if (groupRef.current) {
@@ -171,14 +189,17 @@ const SacredGeometryMemorial: React.FC<{ memorial: MemorialData }> = ({ memorial
           />
         </Box>
 
-        {/* Memorial Photo */}
-        <Plane position={[0, 1.5, 0.16]} args={[1.2, 1.8]}>
-          <meshBasicMaterial 
-            map={photoTexture} 
-            transparent
-            opacity={0.95}
-          />
-        </Plane>
+       {/* Memorial Photo */}
+        {photoTexture && (
+          <Plane position={[0, 1.5, 0.16]} args={[1.2, 1.8]}>
+            <meshBasicMaterial 
+              map={photoTexture} 
+              transparent
+              opacity={0.95}
+            />
+          </Plane>
+        )}
+
 
         {/* Golden Frame */}
         <Box position={[0, 1.5, 0.15]} args={[1.3, 1.9, 0.05]}>

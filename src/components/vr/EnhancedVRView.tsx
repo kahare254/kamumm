@@ -63,7 +63,7 @@ const VRMemorialGarden: React.FC<VRMemorialGardenProps> = ({ memorial }) => {
       <mesh position={[0, 0, 0.81]}>
         <planeGeometry args={[1.2, 1.2]} />
         <meshBasicMaterial>
-          <primitive object={new THREE.TextureLoader().load(memorial.photo || islamicArchPlaceholder)} />
+          <primitive object={new THREE.TextureLoader().load(memorial.photo_path || islamicArchPlaceholder)} />
         </meshBasicMaterial>
       </mesh>
 

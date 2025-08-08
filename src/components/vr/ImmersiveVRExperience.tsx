@@ -86,7 +86,7 @@ const MemorialGardenScene: React.FC<{ memorial: MemorialData; isVRActive: boolea
   isVRActive 
 }) => {
   const groupRef = useRef<THREE.Group>(null);
-  const photoTexture = useTexture(memorial.photo || islamicArchPlaceholder);
+  const photoTexture = useTexture(memorial.photo_path || islamicArchPlaceholder);
 
   useFrame((state) => {
     if (groupRef.current && !isVRActive) {
